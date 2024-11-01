@@ -7,7 +7,7 @@ using System.Web;
 
 namespace Data
 {
-    public class ProductsDat
+    public class ProductDat
     {
         // Se crea una instancia de la clase Persistence para manejar la conexión a la base de datos.
         Persistence objPer = new Persistence();
@@ -29,7 +29,7 @@ namespace Data
             objSelectCmd.Connection = objPer.openConnection();
 
             // Se especifica el nombre del procedimiento almacenado a ejecutar.
-            objSelectCmd.CommandText = "spSelectProducts";
+            objSelectCmd.CommandText = "procSelectProducts";
 
             // Se indica que se trata de un procedimiento almacenado.
             objSelectCmd.CommandType = CommandType.StoredProcedure;
@@ -64,7 +64,7 @@ namespace Data
             objSelectCmd.Parameters.Add("p_code", MySqlDbType.VarString).Value = _code;
             objSelectCmd.Parameters.Add("p_description", MySqlDbType.VarString).Value = _description;
             objSelectCmd.Parameters.Add("p_quantity", MySqlDbType.Int32).Value = _quantity;
-            objSelectCmd.Parameters.Add("p_price", MySqlDbType.Double).Value = _price;
+            objSelectCmd.Parameters.Add("p_price", MySqlDbType.Decimal).Value = _price;
             objSelectCmd.Parameters.Add("p_fkcategory", MySqlDbType.Int32).Value = _fkCategory;
             objSelectCmd.Parameters.Add("p_fkprovider", MySqlDbType.Int32).Value = _fkProvider;
 
@@ -105,9 +105,36 @@ namespace Data
             objSelectCmd.Parameters.Add("p_code", MySqlDbType.VarString).Value = _code;
             objSelectCmd.Parameters.Add("p_description", MySqlDbType.VarString).Value = _description;
             objSelectCmd.Parameters.Add("p_quantity", MySqlDbType.Int32).Value = _quantity;
-            objSelectCmd.Parameters.Add("p_price", MySqlDbType.Double).Value = _price;
+            objSelectCmd.Parameters.Add("p_price", MySqlDbType.Decimal).Value = _price;
             objSelectCmd.Parameters.Add("p_fkcategory", MySqlDbType.Int32).Value = _fkCategory;
             objSelectCmd.Parameters.Add("p_fkprovider", MySqlDbType.Int32).Value = _fkProvider;
+
+            try
+            {
+                row = objSelectCmd.ExecuteNonQuery();
+                if (row == 1)
+                {
+                    executed = true;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error " + e.ToString());
+            }
+            objPer.closeConnection();
+            return executed;
+        }
+        //Metodo para borrar un Producto
+        public bool deleteProducts(int _idProduct)
+        {
+            bool executed = false;
+            int row;
+
+            MySqlCommand objSelectCmd = new MySqlCommand();
+            objSelectCmd.Connection = objPer.openConnection();
+            objSelectCmd.CommandText = "spDeleteProduct"; //nombre del procedimiento almacenado
+            objSelectCmd.CommandType = CommandType.StoredProcedure;
+            objSelectCmd.Parameters.Add("p_id", MySqlDbType.Int32).Value = _idProduct;
 
             try
             {
